@@ -1,0 +1,31 @@
+﻿@model LibraryProject.Models.LoginModel
+@{
+    ViewBag.Title = "Login";
+}
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div>
+        <h4>Enter your Login</h4>
+        <hr />
+        @Html.ValidationSummary()
+        <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
+        <div>
+            @Html.Label("Email")
+            <div>
+                @Html.EditorFor(model => model.Email)
+            </div>
+        </div>
+        <div>
+            @Html.Label("Password")
+            <div>
+                @Html.EditorFor(model => model.Password)
+            </div>
+        </div>
+        <div>
+            <button type="submit" class = "btn btn-sm btn-success">Login</button>
+            @Html.ActionLink("Registrate", "Register", "Account", new { }, new { @class = "btn btn-sm btn-success" })
+        </div>
+    </div>
+}
+

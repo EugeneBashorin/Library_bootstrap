@@ -1,0 +1,36 @@
+﻿@using LibraryProject.Models;
+@model Newspaper
+@{
+    ViewBag.Title = "Edit a newspaper";
+}
+<h4>Edit a newspaper</h4>
+<hr />
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        @Html.LabelFor(model => model.Name, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Name, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Category, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Category, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Publisher, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Publisher, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Price, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Price, new { @class = "form-control" })
+        </div>
+    </div>
+    <input type="submit" class="btn btn-sm btn-success" value="Save">
+    @Html.ActionLink("Back to list", "Index", "Home", new { }, new { @class = "btn btn-sm btn-success" })
+}

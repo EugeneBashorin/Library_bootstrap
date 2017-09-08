@@ -1,0 +1,63 @@
+﻿@using LibraryProject.Models;
+@model List<Newspaper>
+<table class="table table-striped table-bordered col-md-12">
+    <tr>
+        <td class="col-md-2" align="left">
+            @Html.ActionLink("Create New", "CreateNewspaper", "Home", new { }, new { @class = "btn btn-sm btn-success " + @ViewBag.hideEl })
+        </td>
+        <td align="right">
+            @using (Html.BeginForm())
+            {
+                <input type="submit" formaction="/Home/GetAllPublisher/newspaper" class="btn btn-sm btn-success" value="Get all publishers" />
+                <input type="submit" formaction="/Home/GetPublisherList/newspaper" class="btn btn-sm btn-success" value="Sort by publishers" />
+                @Html.TextBox("publisherName", Session["PublisherName"], new { @class = "" })
+            }
+        </td>
+    </tr>
+    <tr>
+        <th align="left">
+            @Html.Label("Name")
+        </th>
+        <th align="left">
+            @Html.Label("Category")
+        </th>
+        <th align="left">
+            @Html.Label("Publisher")
+        </th>
+        <th align="left">
+            @Html.Label("Price")
+        </th>
+        <th align="left">
+            @Html.Label("Action")
+        </th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td align="left">
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td align="left">
+                @Html.DisplayFor(modelItem => item.Category)
+            </td>
+            <td align="left">
+                @Html.DisplayFor(modelItem => item.Publisher)
+            </td>
+            <td align="left">
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td align="left">
+                @Html.ActionLink("Edit newspaper", "EditNewspaper", new { id = item.Id }, new { @class = "btn btn-sm btn-info " + ViewBag.hideEl })
+                @Html.ActionLink("Show", "ShowNewspaper", new { id = item.Id }, new { @class = "btn btn-sm btn-info" })
+                @Html.ActionLink("Delete", "DeleteNewspaper", "Home", new { id = item.Id }, new { @class = "btn btn-sm btn-danger viewDialog " + @ViewBag.hideEl, data_dialog_title = "Model delete" })
+            </td>
+        </tr>
+    }
+    <tr>
+        <td align="right" colspan="5">
+            @Html.ActionLink("Save txt list", "GetNewsPapersList", new { }, new { @class = "btn btn-sm btn-primary button-saver" })
+            @Html.ActionLink("Save xml list", "GetNewspapersXmlList", new { }, new { @class = "btn btn-sm btn-primary button-saver" })
+            @Html.ActionLink("Save list to DB", "GetDatabaseNewspaperList", new { }, new { @class = "btn btn-sm btn-primary db-saver " + @ViewBag.hideEl })
+        </td>
+    </tr>
+</table>

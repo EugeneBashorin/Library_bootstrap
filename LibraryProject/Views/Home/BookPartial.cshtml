@@ -1,0 +1,64 @@
+﻿@using LibraryProject.Models;
+@model List<Book>
+<div id="popUp-request"></div>
+<table class="table table-striped table-bordered col-md-12" >
+    <tr>
+        <td  colspan = "1" align="left">
+            @Html.ActionLink("Create New", "CreateBook", "Home", new { }, new { @class = "btn btn-sm btn-success " + @ViewBag.hideEl })
+        </td>
+        <td colspan = "4" align="right">
+            @using (Html.BeginForm())
+            {
+                <input type="submit" formaction="/Home/GetAllPublisher/book" class="btn btn-sm btn-success" value="Get all publishers" />
+                <input type="submit" formaction="/Home/GetPublisherList/book" class="btn btn-sm btn-success" value="Sort by publishers" />
+                @Html.TextBox("publisherName", Session["PublisherName"], new { @class = "" })
+            }
+        </td>
+    </tr>
+    <tr>
+        <th align="left">
+            @Html.Label("Name")
+        </th>
+        <th align="left">
+            @Html.Label("Author")
+        </th>
+        <th align="left">
+            @Html.Label("Publisher")
+        </th>
+        <th align="left">
+            @Html.Label("Price")
+        </th>
+        <th align="left">
+            @Html.Label("Action")
+        </th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td align="left">
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td align="left">
+                @Html.DisplayFor(modelItem => item.Author)
+            </td>
+            <td align="left">
+                @Html.DisplayFor(modelItem => item.Publisher)
+            </td>
+            <td align="left">
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td align="left">
+                @Html.ActionLink("Edit book", "EditBook", new { id = item.Id }, new { @class = "btn btn-sm btn-info " + ViewBag.hideEl })
+                @Html.ActionLink("Show", "ShowBook", new { id = item.Id }, new { @class = "btn btn-sm btn-info" })
+                @Html.ActionLink("Delete", "DeleteBook", "Home", new { id = item.Id }, new { @class = "btn btn-sm btn-danger viewDialog " + @ViewBag.hideEl, data_dialog_title = "Model delete" })
+            </td>
+        </tr>
+    }
+    <tr>
+        <td align="right" colspan="5">
+            @Html.ActionLink("Save txt list", "GetBooksList", new { }, new { @class = "btn btn-sm btn-primary button-saver" })
+            @Html.ActionLink("Save xml list", "GetBooksXmlList", new { }, new { @class = "btn btn-sm btn-primary button-saver" })
+            @Html.ActionLink("Save list to DB", "GetDatabaseBookList", new { }, new { @class = "btn btn-sm btn-primary db-saver " + @ViewBag.hideEl })
+        </td>
+    </tr>
+</table>

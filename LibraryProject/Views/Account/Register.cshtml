@@ -1,0 +1,42 @@
+﻿@model LibraryProject.Models.RegisterModel
+@{
+    ViewBag.Title = "Register";
+}
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div>
+        <h4>User registration</h4>
+        <hr />
+        @Html.ValidationSummary(false)
+        <div>
+            @Html.Label("Email")
+            <div>
+                @Html.EditorFor(model => model.Email)
+            </div>
+        </div>
+        <div>
+            @Html.Label("Years")
+            <div>
+                @Html.EditorFor(model => model.Year)
+            </div>
+        </div>
+        <div>
+            @Html.Label("Password")
+            <div>
+                @Html.EditorFor(model => model.Password)
+            </div>
+        </div>
+        <div>
+            @Html.Label("Confirm password")
+            <div>
+                @Html.EditorFor(model => model.PasswordConfirm)
+            </div>
+        </div>
+        <div>
+            <input type="submit" value="Register" class = "btn btn-sm btn-success"/>
+            @Html.ActionLink("Log In", "Login", "Account", "", new { @class = "btn btn-sm btn-success" })
+        </div>
+    </div>
+}
+

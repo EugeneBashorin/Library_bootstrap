@@ -1,0 +1,11 @@
+﻿@{
+    ViewBag.Title = "Delete";
+}
+<form method="post">
+    <h4>Are you sure, you want to delete your account?</h4>
+    <hr />
+    <div>
+        <button type="submit" class="btn btn-sm btn-success">Yes</button>
+        @Html.ActionLink("No","Index","Home",new { },new {@class="btn btn-sm btn-success" })
+    </div>
+</form>
