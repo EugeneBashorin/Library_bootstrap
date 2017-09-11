@@ -26,10 +26,9 @@
                     <li class="active">
                         <a class="dropdown-toggle" data-toggle="dropdown">Login<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li>@Html.ActionLink("Log In", "Login", "Account",new { },new { @class = @ViewBag.hideEl }) </li>
-                            <li>@Html.ActionLink("Registrate", "Register", "Account", new { }, new {@class = @ViewBag.hideEl })</li>
+                            <li>@Html.ActionLink("Log In", "Login", "Account",new { },new { @class = @ViewBag.accountElementState }) </li>
+                            <li>@Html.ActionLink("Registrate", "Register", "Account", new { }, new {@class = @ViewBag.accountElementState })</li>
                             <li>@Html.ActionLink("Log Out", "Logout", "Account",new { },new { @class = @ViewBag.logoutLinkElement })</li>
-                            @*<li>@Html.ActionLink("Delete account", "Delete", "Account")</li>*@
                         </ul>
                     </li>
                 </ul>

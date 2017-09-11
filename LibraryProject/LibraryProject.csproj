@@ -219,14 +219,11 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.cs" />
+    <Compile Include="Configurations\ConfigurationData.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Migrations\201709070717334_InitialCreate.cs" />
-    <Compile Include="Migrations\201709070717334_InitialCreate.Designer.cs">
-      <DependentUpon>201709070717334_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201709070741336_DataMigration.cs" />
-    <Compile Include="Migrations\201709070741336_DataMigration.Designer.cs">
-      <DependentUpon>201709070741336_DataMigration.cs</DependentUpon>
+    <Compile Include="Migrations\201709111106595_DataMigration.cs" />
+    <Compile Include="Migrations\201709111106595_DataMigration.Designer.cs">
+      <DependentUpon>201709111106595_DataMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AppDbInitializer.cs" />
@@ -289,11 +286,8 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201709070717334_InitialCreate.resx">
-      <DependentUpon>201709070717334_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201709070741336_DataMigration.resx">
-      <DependentUpon>201709070741336_DataMigration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201709111106595_DataMigration.resx">
+      <DependentUpon>201709111106595_DataMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -10,7 +10,6 @@ namespace LibraryProject.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
-            ContextKey = "LibraryProject.Models.ApplicationContext";
         }
 
         protected override void Seed(LibraryProject.Models.ApplicationContext context)

@@ -1,4 +1,5 @@
-﻿using LibraryProject.Models;
+﻿using LibraryProject.Configurations;
+using LibraryProject.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -11,9 +12,6 @@ namespace LibraryProject.Extention_Classes
 {
     public static class NewspaperExtention
     {
-        private static string writePath = AppDomain.CurrentDomain.BaseDirectory + @"App_Data/newspapers.txt";
-        private static string writeXmlPath = AppDomain.CurrentDomain.BaseDirectory + @"App_Data/newspapers.xml";
-
         public static void GetTxtList(this List<Newspaper> list)
         {
             StringBuilder result = new StringBuilder(130);
@@ -26,7 +24,7 @@ namespace LibraryProject.Extention_Classes
                 }
             }
 
-            using (StreamWriter sw = new StreamWriter(writePath, false, System.Text.Encoding.Default))
+            using (StreamWriter sw = new StreamWriter(ConfigurationData.newspapersWriteTxtPath, false, System.Text.Encoding.Default))
             {
                 sw.WriteLine(result);
             }
@@ -36,7 +34,7 @@ namespace LibraryProject.Extention_Classes
         {
             XmlSerializer xs = new XmlSerializer(typeof(List<Newspaper>));
 
-            using (FileStream fs = new FileStream(writeXmlPath, FileMode.Create))
+            using (FileStream fs = new FileStream(ConfigurationData.newspapersWriteXmlPath, FileMode.Create))
             {
                 xs.Serialize(fs, xmlNewspapersList);
             }

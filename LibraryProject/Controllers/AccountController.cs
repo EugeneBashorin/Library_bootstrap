@@ -1,4 +1,5 @@
-﻿using LibraryProject.Models;
+﻿using LibraryProject.Configurations;
+using LibraryProject.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
@@ -30,18 +31,21 @@ namespace LibraryProject.Controllers
         {
             if (ModelState.IsValid)
             {
-                ApplicationUser user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                ApplicationUser user = new ApplicationUser();
+                user.UserName = model.Email;
+                user.Email = model.Email;
+
                 IdentityResult result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await UserManager.AddToRoleAsync(user.Id, "user");
+                    await UserManager.AddToRoleAsync(user.Id, ConfigurationData._USER_ROLE);
                     return RedirectToAction("Login", "Account");
                 }
                 else
                 {
                     foreach (string error in result.Errors)
                     {
-                        ModelState.AddModelError("", error);
+                        ModelState.AddModelError(string.Empty, error);
                     }
                 }
             }
@@ -58,6 +62,7 @@ namespace LibraryProject.Controllers
 
         public ActionResult Login(string returnUrl)
         {
+            ViewBag.logoutLinkElement = ConfigurationData._ATTRIBUTES_STATE_OFF;
             ViewBag.returnUrl = returnUrl;
             return View();
         }
@@ -79,7 +84,9 @@ namespace LibraryProject.Controllers
                     AuthenticationManager.SignOut();
                     AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = false }, claim);
                     if (String.IsNullOrEmpty(returnUrl))
+                    {
                         return RedirectToAction("Index", "Home");
+                    } 
                     return Redirect(returnUrl);
                 }
             }
@@ -104,13 +111,14 @@ namespace LibraryProject.Controllers
         public async Task<ActionResult> DeleteConfirmed()
         {
             ApplicationUser user = await UserManager.FindByEmailAsync(User.Identity.Name);
-            if (user != null)
+            if (user == null)
             {
-                IdentityResult result = await UserManager.DeleteAsync(user);
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Login", "Account");
-                }
+                return RedirectToAction("Index", "Home");
+            }
+            IdentityResult result = await UserManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Login", "Account");
             }
             return RedirectToAction("Index", "Home");
         }

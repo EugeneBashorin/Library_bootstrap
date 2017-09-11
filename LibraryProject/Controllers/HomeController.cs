@@ -1,11 +1,9 @@
-﻿using LibraryProject.Extention_Classes;
+﻿using LibraryProject.Configurations;
+using LibraryProject.Extention_Classes;
 using LibraryProject.Models;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace LibraryProject.Controllers
@@ -13,38 +11,35 @@ namespace LibraryProject.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        private const string _BOOK_KEY = "book";
-        private const string _MAGAZINE_KEY = "magazine";
-        private const string _NEWSPAPER_KEY = "newspaper";
-        private const string _ATTRIBUTES_STATE = "hidden";
-
-        private const int _AUTOINCREMENT = 1;
-        private string connectionString = ConfigurationManager.ConnectionStrings["SqlManager"].ConnectionString;
-
         List<Book> bookList;
         List<Magazine> magazineList;
         List<Newspaper> newspaperList;
         IndexModel indexModel;
-    
+
+        private string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+        
         [HttpGet]
         public ActionResult Index()
         {
-            if (User.IsInRole("user"))
+            DbInitializer();
+            if (User.IsInRole(ConfigurationData._USER_ROLE))
             {
-                ViewBag.hideElement = _ATTRIBUTES_STATE;
+                ViewBag.hideElement = ConfigurationData._ATTRIBUTES_STATE_OFF;
             }
-            if (User.IsInRole("admin") & User.IsInRole("user"))
+            if (User.IsInRole(ConfigurationData._ADMIN_ROLE) & User.IsInRole(ConfigurationData._USER_ROLE))
             {
-                ViewBag.hideElement = "";
+                ViewBag.hideElement = ConfigurationData._ATTRIBUTES_STATE_ON;
             }
-
+            
             if (User.Identity.IsAuthenticated)
             {
-                ViewBag.hideElement = _ATTRIBUTES_STATE;
+                ViewBag.accountElementState = ConfigurationData._ATTRIBUTES_STATE_OFF;
+                ViewBag.logoutLinkElement = ConfigurationData._ATTRIBUTES_STATE_ON;
             }
             if (!User.Identity.IsAuthenticated)
             {
-                ViewBag.logoutLinkElement = _ATTRIBUTES_STATE;
+                ViewBag.accountElementState = ConfigurationData._ATTRIBUTES_STATE_ON;
+                ViewBag.logoutLinkElement = ConfigurationData._ATTRIBUTES_STATE_OFF;
             }
 
             if (Session["LibraryState"] == null)
@@ -105,11 +100,18 @@ namespace LibraryProject.Controllers
             return View(indexModel);
         }
 
+        public ActionResult DbInitializer()
+        {
+
+            return RedirectToAction("Index");
+        }
+
+
         [HttpPost]
         public ActionResult GetPublisherList(string id = "", string publisherName = "")
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
-            if (id == _BOOK_KEY)
+            if (id == ConfigurationData._BOOK_KEY)
             {
                 List<Book> bookList = indexModel.Books;
                 List<Book> newBookList = new List<Book>();
@@ -123,7 +125,7 @@ namespace LibraryProject.Controllers
                 }
                 indexModel.Books = newBookList;
             }
-            if (id == _MAGAZINE_KEY)
+            if (id == ConfigurationData._MAGAZINE_KEY)
             {
                 List<Magazine> magazineList = indexModel.Magazines;
                 List<Magazine> newMagazineList = new List<Magazine>();
@@ -137,7 +139,7 @@ namespace LibraryProject.Controllers
                 }
                 indexModel.Magazines = newMagazineList;
             }
-            if (id == _NEWSPAPER_KEY)
+            if (id == ConfigurationData._NEWSPAPER_KEY)
             {
                 List<Newspaper> newspaperList = indexModel.Newspapers;
                 List<Newspaper> newNewsPaperList = new List<Newspaper>();
@@ -159,15 +161,15 @@ namespace LibraryProject.Controllers
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
 
-            if (id == _BOOK_KEY)
+            if (id == ConfigurationData._BOOK_KEY)
             {
                 indexModel.Books = (List<Book>)Session["BookMemorry"];
             }
-            if (id == _MAGAZINE_KEY)
+            if (id == ConfigurationData._MAGAZINE_KEY)
             {
                 indexModel.Magazines = (List<Magazine>)Session["MagazineMemorry"];
             }
-            if (id == _NEWSPAPER_KEY)
+            if (id == ConfigurationData._NEWSPAPER_KEY)
             {
                 indexModel.Newspapers = (List<Newspaper>)Session["NewsPaperMemorry"];
             }
@@ -223,7 +225,7 @@ namespace LibraryProject.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles ="admin")]
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         public ActionResult CreateBook()
         {
             return View();
@@ -234,7 +236,7 @@ namespace LibraryProject.Controllers
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
 
-            book.Id = indexModel.Books.Count + _AUTOINCREMENT;
+            book.Id = indexModel.Books.Count + ConfigurationData._AUTOINCREMENT;
             indexModel.Books.Add(book);
             return RedirectToAction("Index");
         }
@@ -252,7 +254,7 @@ namespace LibraryProject.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         public ActionResult EditBook(int id)
         {
            IndexModel indexModel = (IndexModel)Session["LibraryState"];
@@ -281,18 +283,19 @@ namespace LibraryProject.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         public ActionResult DeleteBook(int? id)
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
             Book book = (from t in indexModel.Books
-                         where t.Id == id
+                         where t.Id == id 
                          select t).First();
 
             return PartialView(book);
         }
 
         [HttpPost, ActionName("DeleteBook")]
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         public ActionResult DeleteConfirmedBook(int id)
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
@@ -301,7 +304,7 @@ namespace LibraryProject.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         public ActionResult GetDatabaseBookList()
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
@@ -312,7 +315,7 @@ namespace LibraryProject.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         public ActionResult GetDatabaseMagazineList()
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
@@ -323,7 +326,7 @@ namespace LibraryProject.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         public ActionResult GetDatabaseNewspaperList()
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
@@ -334,7 +337,7 @@ namespace LibraryProject.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         public ActionResult CreateMagazine()
         {
             return View();
@@ -345,7 +348,7 @@ namespace LibraryProject.Controllers
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
 
-            magazine.Id = indexModel.Magazines.Count + _AUTOINCREMENT;
+            magazine.Id = indexModel.Magazines.Count + ConfigurationData._AUTOINCREMENT;
             indexModel.Magazines.Add(magazine);
             return RedirectToAction("Index");
         }
@@ -363,7 +366,7 @@ namespace LibraryProject.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         public ActionResult EditMagazine(int id)
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
@@ -393,7 +396,7 @@ namespace LibraryProject.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         public ActionResult DeleteMagazine(int? id)
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
@@ -413,7 +416,7 @@ namespace LibraryProject.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         public ActionResult CreateNewspaper()
         {
             return View();
@@ -424,7 +427,7 @@ namespace LibraryProject.Controllers
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
 
-            newspaper.Id = indexModel.Newspapers.Count + _AUTOINCREMENT;
+            newspaper.Id = indexModel.Newspapers.Count + ConfigurationData._AUTOINCREMENT;
             indexModel.Newspapers.Add(newspaper);
             return RedirectToAction("Index");
         }
@@ -442,7 +445,7 @@ namespace LibraryProject.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         public ActionResult EditNewspaper(int id)
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
@@ -472,7 +475,7 @@ namespace LibraryProject.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         public ActionResult DeleteNewspaper(int? id)
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];

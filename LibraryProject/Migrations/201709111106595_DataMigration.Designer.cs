@@ -13,7 +13,7 @@ namespace LibraryProject.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201709070741336_DataMigration"; }
+            get { return "201709111106595_DataMigration"; }
         }
         
         string IMigrationMetadata.Source
