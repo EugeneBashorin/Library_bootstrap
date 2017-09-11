@@ -150,10 +150,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\IdentityDb.mdf" />
-    <Content Include="App_Data\IdentityDb_log.ldf">
-      <DependentUpon>IdentityDb.mdf</DependentUpon>
-    </Content>
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -224,7 +220,6 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Migrations\201709070717334_InitialCreate.cs" />
     <Compile Include="Migrations\201709070717334_InitialCreate.Designer.cs">
       <DependentUpon>201709070717334_InitialCreate.cs</DependentUpon>
@@ -241,12 +236,9 @@
     <Compile Include="Models\ApplicationUser.cs" />
     <Compile Include="Models\ApplicationUserManager.cs" />
     <Compile Include="Models\CreateRoleModel.cs" />
-    <Compile Include="Models\EditModel.cs" />
-    <Compile Include="Models\EditRoleModel.cs" />
     <Compile Include="Models\IdentityExtensions.cs" />
     <Compile Include="Models\LoginModel.cs" />
     <Compile Include="Models\RegisterModel.cs" />
-    <Compile Include="SaveBooksToDB.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Extention Classes\BookExtention.cs" />
     <Compile Include="Extention Classes\MagazineExtention.cs" />
@@ -286,10 +278,6 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Delete.cshtml" />
-    <Content Include="Views\Account\Edit.cshtml" />
-    <Content Include="Views\Roles\Index.cshtml" />
-    <Content Include="Views\Roles\Create.cshtml" />
-    <Content Include="Views\Roles\Edit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -297,7 +285,9 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201709070717334_InitialCreate.resx">
       <DependentUpon>201709070717334_InitialCreate.cs</DependentUpon>

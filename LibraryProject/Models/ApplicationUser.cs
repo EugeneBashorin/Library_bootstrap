@@ -1,17 +1,12 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace LibraryProject.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public int Year { get; set; }
 
         public ApplicationUser()
         {
@@ -21,9 +16,6 @@ namespace LibraryProject.Models
         {
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
 
-            var yearClaim = Claims.FirstOrDefault(c => c.ClaimType == "Year");
-            if (yearClaim != null)
-                userIdentity.AddClaim(new Claim(yearClaim.ClaimType, yearClaim.ClaimValue));
             return userIdentity;
         }
     }

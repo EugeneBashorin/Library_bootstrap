@@ -17,6 +17,7 @@ namespace LibraryProject.Controllers
         private const string _MAGAZINE_KEY = "magazine";
         private const string _NEWSPAPER_KEY = "newspaper";
         private const string _ATTRIBUTES_STATE = "hidden";
+
         private const int _AUTOINCREMENT = 1;
         private string connectionString = ConfigurationManager.ConnectionStrings["SqlManager"].ConnectionString;
 
@@ -30,13 +31,22 @@ namespace LibraryProject.Controllers
         {
             if (User.IsInRole("user"))
             {
-                ViewBag.hideEl = _ATTRIBUTES_STATE;
+                ViewBag.hideElement = _ATTRIBUTES_STATE;
             }
             if (User.IsInRole("admin") & User.IsInRole("user"))
             {
-                ViewBag.hideEl = "";
+                ViewBag.hideElement = "";
             }
-         
+
+            if (User.Identity.IsAuthenticated)
+            {
+                ViewBag.hideElement = _ATTRIBUTES_STATE;
+            }
+            if (!User.Identity.IsAuthenticated)
+            {
+                ViewBag.logoutLinkElement = _ATTRIBUTES_STATE;
+            }
+
             if (Session["LibraryState"] == null)
             {
                 indexModel = new IndexModel();
@@ -44,41 +54,41 @@ namespace LibraryProject.Controllers
                 magazineList = new List<Magazine>();
                 newspaperList = new List<Newspaper>();
 
-                bookList.AddRange(new List<Book> { new Book { Name = "Head First C#", Author = "A.Stellman, J.Greene", Publisher = "O.Reilly", Price = 540, Id = 1 },
-                    new Book{Name = "LINQ Succinctly", Author = "J.Roberts", Publisher = "Syncfusion", Price = 200, Id = 2},
-                    new Book{Name = "Java Script Patterns", Author = "S.Stefanov", Publisher = "O.Reilly", Price = 312, Id = 3 },
-                    new Book{Name = "Head First JS Programming", Author = "E.Freeman, E.Robson", Publisher = "O.Reilly", Price = 330, Id = 4 },
-                    new Book{Name = "SQL The Complete Reference", Author = "J.Groff, P.Weinberg, A.Oppel", Publisher = "Williams", Price = 158, Id = 5 },
-                    new Book{Name = "Getting started with ASP.NET 5.0 Web Forms", Author = "N.Gaylord, Ch.Wenz, P.Rastogi, T.Miranda", Publisher = "O.Reilly", Price = 400, Id = 6 },
-                    new Book{Name = "C# 6.0 Complete Guide", Author = "J.& B.Albahairy", Publisher = "Williams", Price = 499, Id = 7 },
-                    new Book{Name = "ASP.NET 4.5 in C# and VB", Author = "J.Gaylord", Publisher = "Wrox", Price = 274, Id = 8 },
-                    new Book{Name = "Head First SQL", Author = "Lynn Beighley", Publisher = "O.Reilly", Price = 299, Id = 9 },
-                    new Book{Name = "Design Patterns via C#", Author = "A.Shevchyk, A.Kasianov, D.Ohrimenko", Publisher = "ITVDN", Price = 830, Id = 10 },
-                    new Book{Name = "OOP in C#. Succinctly", Author = "S.Rossel", Publisher = "Syncfusion", Price = 830, Id = 11}
+                bookList.AddRange(new List<Book> { new Book { Name = "Head First C#", Author = "A.Stellman, J.Greene", Publisher = "O.Reilly", Price = 540},
+                    new Book{Name = "LINQ Succinctly", Author = "J.Roberts", Publisher = "Syncfusion", Price = 200},
+                    new Book{Name = "Java Script Patterns", Author = "S.Stefanov", Publisher = "O.Reilly", Price = 312 },
+                    new Book{Name = "Head First JS Programming", Author = "E.Freeman, E.Robson", Publisher = "O.Reilly", Price = 330 },
+                    new Book{Name = "SQL The Complete Reference", Author = "J.Groff, P.Weinberg, A.Oppel", Publisher = "Williams", Price = 158 },
+                    new Book{Name = "Getting started with ASP.NET 5.0 Web Forms", Author = "N.Gaylord, Ch.Wenz, P.Rastogi, T.Miranda", Publisher = "O.Reilly", Price = 400},
+                    new Book{Name = "C# 6.0 Complete Guide", Author = "J.& B.Albahairy", Publisher = "Williams", Price = 499 },
+                    new Book{Name = "ASP.NET 4.5 in C# and VB", Author = "J.Gaylord", Publisher = "Wrox", Price = 274 },
+                    new Book{Name = "Head First SQL", Author = "Lynn Beighley", Publisher = "O.Reilly", Price = 299 },
+                    new Book{Name = "Design Patterns via C#", Author = "A.Shevchyk, A.Kasianov, D.Ohrimenko", Publisher = "ITVDN", Price = 830},
+                    new Book{Name = "OOP in C#. Succinctly", Author = "S.Rossel", Publisher = "Syncfusion", Price = 830}
                 });
 
-                magazineList.AddRange(new List<Magazine> { new Magazine{ Name = "Martial Mix", Category = "Sport", Price = 16, Publisher = "Williams", Id = 1},
-                    new Magazine{Name = "Fashion", Category = "Fashion", Price = 20, Publisher = "Mag Group",Id = 2},
-                    new Magazine{Name = "Forbs", Category = "Economic", Price = 25, Publisher = "Stanley & Co",Id = 3},
-                    new Magazine{Name = "Geek", Category = "IT", Price = 21, Publisher = "Stanley & Co",Id = 4},
-                    new Magazine{Name = "Amaizing wild world", Category = "Nature", Price = 22, Publisher = "Stanley & Co",Id = 5},
-                    new Magazine{Name = "Braine scince", Category = "Psychology", Price = 26, Publisher = "Williams",Id = 6},
-                    new Magazine{Name = "Car Evo", Category = "Car", Price = 24, Publisher = "MagGroup",Id = 7},
-                    new Magazine{Name = "Robo", Category = "Scince", Price = 32, Publisher = "Stanley & Co",Id = 8},
-                    new Magazine{Name = "Zadrot", Category = "Games", Price = 16, Publisher = "Williams",Id = 9},
-                    new Magazine{Name = "Design & Creative", Category = "Design", Price = 30, Publisher = "Mag Group",Id = 10}
+                magazineList.AddRange(new List<Magazine> { new Magazine{ Name = "Martial Mix", Category = "Sport", Price = 16, Publisher = "Williams"},
+                    new Magazine{Name = "Fashion", Category = "Fashion", Price = 20, Publisher = "Mag Group"},
+                    new Magazine{Name = "Forbs", Category = "Economic", Price = 25, Publisher = "Stanley & Co"},
+                    new Magazine{Name = "Geek", Category = "IT", Price = 21, Publisher = "Stanley & Co"},
+                    new Magazine{Name = "Amaizing wild world", Category = "Nature", Price = 22, Publisher = "Stanley & Co"},
+                    new Magazine{Name = "Braine scince", Category = "Psychology", Price = 26, Publisher = "Williams"},
+                    new Magazine{Name = "Car Evo", Category = "Car", Price = 24, Publisher = "MagGroup"},
+                    new Magazine{Name = "Robo", Category = "Scince", Price = 32, Publisher = "Stanley & Co"},
+                    new Magazine{Name = "Zadrot", Category = "Games", Price = 16, Publisher = "Williams"},
+                    new Magazine{Name = "Design & Creative", Category = "Design", Price = 30, Publisher = "Mag Group"}
                 });
 
-                newspaperList.AddRange(new List<Newspaper> {new Newspaper{Name = "The NewYork Times", Category = "News", Price = 15, Publisher = "Red Octouber", Id =1},
-                    new Newspaper{Name = "The WallSteet Jornal", Category = "Economy", Price = 12, Publisher = "Red Octouber", Id = 2},
-                    new Newspaper{Name = "Ring", Category = "Sport", Price = 14, Publisher = "Ronald", Id = 3},
-                    new Newspaper{Name = "Los Angeles Times", Category = "News", Price = 10, Publisher = "West-Cost", Id = 4},
-                    new Newspaper{Name = "The Washington Post", Category = "News", Price = 19, Publisher = "Croxy", Id = 5},
-                    new Newspaper{Name = "The Times", Category = "News", Price = 14, Publisher = "Croxy", Id = 6},
-                    new Newspaper{Name = "The Guardian", Category = "News", Price = 17, Publisher = "West-Cost", Id = 7},
-                    new Newspaper{Name = "The Daily Telegraph", Category = "News", Price = 13, Publisher = "Croxy", Id = 8},
-                    new Newspaper{Name = "Financial Times", Category = "Economy", Price = 21, Publisher = "Red Octouber", Id= 9},
-                    new Newspaper{Name = "Le Figaro", Category = "News", Price = 11, Publisher = "West-Cost", Id= 10}
+                newspaperList.AddRange(new List<Newspaper> {new Newspaper{Name = "The NewYork Times", Category = "News", Price = 15, Publisher = "Red Octouber"},
+                    new Newspaper{Name = "The WallSteet Jornal", Category = "Economy", Price = 12, Publisher = "Red Octouber"},
+                    new Newspaper{Name = "Ring", Category = "Sport", Price = 14, Publisher = "Ronald"},
+                    new Newspaper{Name = "Los Angeles Times", Category = "News", Price = 10, Publisher = "West-Cost"},
+                    new Newspaper{Name = "The Washington Post", Category = "News", Price = 19, Publisher = "Croxy"},
+                    new Newspaper{Name = "The Times", Category = "News", Price = 14, Publisher = "Croxy"},
+                    new Newspaper{Name = "The Guardian", Category = "News", Price = 17, Publisher = "West-Cost"},
+                    new Newspaper{Name = "The Daily Telegraph", Category = "News", Price = 13, Publisher = "Croxy"},
+                    new Newspaper{Name = "Financial Times", Category = "Economy", Price = 21, Publisher = "Red Octouber"},
+                    new Newspaper{Name = "Le Figaro", Category = "News", Price = 11, Publisher = "West-Cost"}
                 });
 
                 indexModel.Books = bookList;

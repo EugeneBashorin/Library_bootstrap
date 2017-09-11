@@ -15,12 +15,12 @@
                 @Html.EditorFor(model => model.Email)
             </div>
         </div>
-        <div>
+        @*<div>
             @Html.Label("Years")
             <div>
                 @Html.EditorFor(model => model.Year)
             </div>
-        </div>
+        </div>*@
         <div>
             @Html.Label("Password")
             <div>
@@ -34,8 +34,8 @@
             </div>
         </div>
         <div>
-            <input type="submit" value="Register" class = "btn btn-sm btn-success"/>
-            @Html.ActionLink("Log In", "Login", "Account", "", new { @class = "btn btn-sm btn-success" })
+            <input type="submit" value="Register" class = "btn btn-sm btn-success" />
+            @Html.ActionLink("Log In", "Login", "Account", "", new { @class = "btn-link btn-success" })
         </div>
     </div>
 }

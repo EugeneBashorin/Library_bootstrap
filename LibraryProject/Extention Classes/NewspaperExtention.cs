@@ -22,7 +22,7 @@ namespace LibraryProject.Extention_Classes
             {
                 foreach (Newspaper item in list)
                 {
-                    result.AppendLine($"Name: {item.Name} Author: {item.Category} Publisher: {item.Publisher} Price: {item.Price.ToString()}");
+                    result.AppendLine($"Name: {item.Name} Category: {item.Category} Publisher: {item.Publisher} Price: {item.Price.ToString()}");
                 }
             }
 
