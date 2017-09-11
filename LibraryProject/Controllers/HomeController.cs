@@ -1,9 +1,12 @@
 ﻿using LibraryProject.Configurations;
 using LibraryProject.Extention_Classes;
 using LibraryProject.Models;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using System.Web.Mvc;
 
 namespace LibraryProject.Controllers
@@ -13,15 +16,16 @@ namespace LibraryProject.Controllers
     {
         List<Book> bookList;
         List<Magazine> magazineList;
-        List<Newspaper> newspaperList;
+        List<Newspaper> newspapersList;
         IndexModel indexModel;
 
+
         private string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-        
+
         [HttpGet]
         public ActionResult Index()
         {
-            DbInitializer();
+
             if (User.IsInRole(ConfigurationData._USER_ROLE))
             {
                 ViewBag.hideElement = ConfigurationData._ATTRIBUTES_STATE_OFF;
@@ -30,7 +34,7 @@ namespace LibraryProject.Controllers
             {
                 ViewBag.hideElement = ConfigurationData._ATTRIBUTES_STATE_ON;
             }
-            
+
             if (User.Identity.IsAuthenticated)
             {
                 ViewBag.accountElementState = ConfigurationData._ATTRIBUTES_STATE_OFF;
@@ -42,70 +46,158 @@ namespace LibraryProject.Controllers
                 ViewBag.logoutLinkElement = ConfigurationData._ATTRIBUTES_STATE_OFF;
             }
 
-            if (Session["LibraryState"] == null)
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                indexModel = new IndexModel();
-                bookList = new List<Book>();
-                magazineList = new List<Magazine>();
-                newspaperList = new List<Newspaper>();
+                connection.Open();
+                if (connection == null)
+                {
+                    return HttpNotFound();
+                }
+                if (connection != null)
+                {
+                    bookList = new List<Book>();
+                    Book book = new Book();
+                    string booksSelectExpression = "SELECT * FROM Books";
+                    SqlCommand command = new SqlCommand(booksSelectExpression, connection);
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            bookList.Add(new Book { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1), Author = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4)});
+                            //book.Id = (int)reader.GetValue(0);
+                            //book.Name = (string)reader.GetValue(1);
+                            //book.Author = (string)reader.GetValue(2);
+                            //book.Publisher = (string)reader.GetValue(3);
+                            //book.Price = (int)reader.GetValue(4);
+                        }
+                    }
+                }
+            }
 
-                bookList.AddRange(new List<Book> { new Book { Name = "Head First C#", Author = "A.Stellman, J.Greene", Publisher = "O.Reilly", Price = 540},
-                    new Book{Name = "LINQ Succinctly", Author = "J.Roberts", Publisher = "Syncfusion", Price = 200},
-                    new Book{Name = "Java Script Patterns", Author = "S.Stefanov", Publisher = "O.Reilly", Price = 312 },
-                    new Book{Name = "Head First JS Programming", Author = "E.Freeman, E.Robson", Publisher = "O.Reilly", Price = 330 },
-                    new Book{Name = "SQL The Complete Reference", Author = "J.Groff, P.Weinberg, A.Oppel", Publisher = "Williams", Price = 158 },
-                    new Book{Name = "Getting started with ASP.NET 5.0 Web Forms", Author = "N.Gaylord, Ch.Wenz, P.Rastogi, T.Miranda", Publisher = "O.Reilly", Price = 400},
-                    new Book{Name = "C# 6.0 Complete Guide", Author = "J.& B.Albahairy", Publisher = "Williams", Price = 499 },
-                    new Book{Name = "ASP.NET 4.5 in C# and VB", Author = "J.Gaylord", Publisher = "Wrox", Price = 274 },
-                    new Book{Name = "Head First SQL", Author = "Lynn Beighley", Publisher = "O.Reilly", Price = 299 },
-                    new Book{Name = "Design Patterns via C#", Author = "A.Shevchyk, A.Kasianov, D.Ohrimenko", Publisher = "ITVDN", Price = 830},
-                    new Book{Name = "OOP in C#. Succinctly", Author = "S.Rossel", Publisher = "Syncfusion", Price = 830}
-                });
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                if (connection == null)
+                {
+                    return HttpNotFound();
+                }
+                if (connection != null)
+                {
+                    magazineList = new List<Magazine>();
+                    Magazine magazine = new Magazine();
+                    string magazinesSelectExpression = "SELECT * FROM Magazines";
+                    SqlCommand command = new SqlCommand(magazinesSelectExpression, connection);
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            magazineList.Add(new Magazine { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1),  Category = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4) });
+                            //magazine.Id = (int)reader.GetValue(0);
+                            //magazine.Name = (string)reader.GetValue(1);
+                            //magazine.Category = (string)reader.GetValue(2);
+                            //magazine.Publisher = (string)reader.GetValue(3);
+                            //magazine.Price = (int)reader.GetValue(4);
 
-                magazineList.AddRange(new List<Magazine> { new Magazine{ Name = "Martial Mix", Category = "Sport", Price = 16, Publisher = "Williams"},
-                    new Magazine{Name = "Fashion", Category = "Fashion", Price = 20, Publisher = "Mag Group"},
-                    new Magazine{Name = "Forbs", Category = "Economic", Price = 25, Publisher = "Stanley & Co"},
-                    new Magazine{Name = "Geek", Category = "IT", Price = 21, Publisher = "Stanley & Co"},
-                    new Magazine{Name = "Amaizing wild world", Category = "Nature", Price = 22, Publisher = "Stanley & Co"},
-                    new Magazine{Name = "Braine scince", Category = "Psychology", Price = 26, Publisher = "Williams"},
-                    new Magazine{Name = "Car Evo", Category = "Car", Price = 24, Publisher = "MagGroup"},
-                    new Magazine{Name = "Robo", Category = "Scince", Price = 32, Publisher = "Stanley & Co"},
-                    new Magazine{Name = "Zadrot", Category = "Games", Price = 16, Publisher = "Williams"},
-                    new Magazine{Name = "Design & Creative", Category = "Design", Price = 30, Publisher = "Mag Group"}
-                });
+                            //magazineList.Add(magazine);
+                        }
+                    }
+                }
+            }
 
-                newspaperList.AddRange(new List<Newspaper> {new Newspaper{Name = "The NewYork Times", Category = "News", Price = 15, Publisher = "Red Octouber"},
-                    new Newspaper{Name = "The WallSteet Jornal", Category = "Economy", Price = 12, Publisher = "Red Octouber"},
-                    new Newspaper{Name = "Ring", Category = "Sport", Price = 14, Publisher = "Ronald"},
-                    new Newspaper{Name = "Los Angeles Times", Category = "News", Price = 10, Publisher = "West-Cost"},
-                    new Newspaper{Name = "The Washington Post", Category = "News", Price = 19, Publisher = "Croxy"},
-                    new Newspaper{Name = "The Times", Category = "News", Price = 14, Publisher = "Croxy"},
-                    new Newspaper{Name = "The Guardian", Category = "News", Price = 17, Publisher = "West-Cost"},
-                    new Newspaper{Name = "The Daily Telegraph", Category = "News", Price = 13, Publisher = "Croxy"},
-                    new Newspaper{Name = "Financial Times", Category = "Economy", Price = 21, Publisher = "Red Octouber"},
-                    new Newspaper{Name = "Le Figaro", Category = "News", Price = 11, Publisher = "West-Cost"}
-                });
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                if (connection == null)
+                {
+                    return HttpNotFound();
+                }
+                if (connection != null)
+                {
+                    newspapersList = new List<Newspaper>();
+                    Newspaper newspaper = new Newspaper();
+                    string newspaperSelectExpression = "SELECT * FROM Newspapers";
+                    SqlCommand command = new SqlCommand(newspaperSelectExpression, connection);
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            newspapersList.Add(new Newspaper { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1),  Category = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4) });
+                            //newspaper.Id = (int)reader.GetValue(0);
+                            //newspaper.Name = (string)reader.GetValue(1);
+                            //newspaper.Category = (string)reader.GetValue(2);
+                            //newspaper.Publisher = (string)reader.GetValue(3);
+                            //newspaper.Price = (int)reader.GetValue(4);
 
-                indexModel.Books = bookList;
-                indexModel.Magazines = magazineList;
-                indexModel.Newspapers = newspaperList;
-
-                Session["LibraryState"] = indexModel;
+                            //newspapersList.Add(newspaper);
+                        }
+                    }                 
+                }
 
             }
-            if (Session["LibraryState"] != null)
-            {
-                indexModel = (IndexModel)Session["LibraryState"];
-            }
+            indexModel = new IndexModel();
+            indexModel.Books = bookList;
+            indexModel.Magazines = magazineList;
+            indexModel.Newspapers = newspapersList;
+            //if (Session["LibraryState"] == null)
+            //{
+            //    indexModel = new IndexModel();
+            //    bookList = new List<Book>();
+            //    magazineList = new List<Magazine>();
+            //    newspaperList = new List<Newspaper>();
+
+            //    bookList.AddRange(new List<Book> { new Book { Name = "Head First C#", Author = "A.Stellman, J.Greene", Publisher = "O.Reilly", Price = 540},
+            //        new Book{Name = "LINQ Succinctly", Author = "J.Roberts", Publisher = "Syncfusion", Price = 200},
+            //        new Book{Name = "Java Script Patterns", Author = "S.Stefanov", Publisher = "O.Reilly", Price = 312 },
+            //        new Book{Name = "Head First JS Programming", Author = "E.Freeman, E.Robson", Publisher = "O.Reilly", Price = 330 },
+            //        new Book{Name = "SQL The Complete Reference", Author = "J.Groff, P.Weinberg, A.Oppel", Publisher = "Williams", Price = 158 },
+            //        new Book{Name = "Getting started with ASP.NET 5.0 Web Forms", Author = "N.Gaylord, Ch.Wenz, P.Rastogi, T.Miranda", Publisher = "O.Reilly", Price = 400},
+            //        new Book{Name = "C# 6.0 Complete Guide", Author = "J.& B.Albahairy", Publisher = "Williams", Price = 499 },
+            //        new Book{Name = "ASP.NET 4.5 in C# and VB", Author = "J.Gaylord", Publisher = "Wrox", Price = 274 },
+            //        new Book{Name = "Head First SQL", Author = "Lynn Beighley", Publisher = "O.Reilly", Price = 299 },
+            //        new Book{Name = "Design Patterns via C#", Author = "A.Shevchyk, A.Kasianov, D.Ohrimenko", Publisher = "ITVDN", Price = 830},
+            //        new Book{Name = "OOP in C#. Succinctly", Author = "S.Rossel", Publisher = "Syncfusion", Price = 830}
+            //    });
+
+            //    magazineList.AddRange(new List<Magazine> { new Magazine{ Name = "Martial Mix", Category = "Sport", Price = 16, Publisher = "Williams"},
+            //        new Magazine{Name = "Fashion", Category = "Fashion", Price = 20, Publisher = "Mag Group"},
+            //        new Magazine{Name = "Forbs", Category = "Economic", Price = 25, Publisher = "Stanley & Co"},
+            //        new Magazine{Name = "Geek", Category = "IT", Price = 21, Publisher = "Stanley & Co"},
+            //        new Magazine{Name = "Amaizing wild world", Category = "Nature", Price = 22, Publisher = "Stanley & Co"},
+            //        new Magazine{Name = "Braine scince", Category = "Psychology", Price = 26, Publisher = "Williams"},
+            //        new Magazine{Name = "Car Evo", Category = "Car", Price = 24, Publisher = "MagGroup"},
+            //        new Magazine{Name = "Robo", Category = "Scince", Price = 32, Publisher = "Stanley & Co"},
+            //        new Magazine{Name = "Zadrot", Category = "Games", Price = 16, Publisher = "Williams"},
+            //        new Magazine{Name = "Design & Creative", Category = "Design", Price = 30, Publisher = "Mag Group"}
+            //    });
+
+            //    newspaperList.AddRange(new List<Newspaper> {new Newspaper{Name = "The NewYork Times", Category = "News", Price = 15, Publisher = "Red Octouber"},
+            //        new Newspaper{Name = "The WallSteet Jornal", Category = "Economy", Price = 12, Publisher = "Red Octouber"},
+            //        new Newspaper{Name = "Ring", Category = "Sport", Price = 14, Publisher = "Ronald"},
+            //        new Newspaper{Name = "Los Angeles Times", Category = "News", Price = 10, Publisher = "West-Cost"},
+            //        new Newspaper{Name = "The Washington Post", Category = "News", Price = 19, Publisher = "Croxy"},
+            //        new Newspaper{Name = "The Times", Category = "News", Price = 14, Publisher = "Croxy"},
+            //        new Newspaper{Name = "The Guardian", Category = "News", Price = 17, Publisher = "West-Cost"},
+            //        new Newspaper{Name = "The Daily Telegraph", Category = "News", Price = 13, Publisher = "Croxy"},
+            //        new Newspaper{Name = "Financial Times", Category = "Economy", Price = 21, Publisher = "Red Octouber"},
+            //        new Newspaper{Name = "Le Figaro", Category = "News", Price = 11, Publisher = "West-Cost"}
+            //    });
+
+            //    indexModel.Books = bookList;
+            //    indexModel.Magazines = magazineList;
+            //    indexModel.Newspapers = newspaperList;
+
+            //    Session["LibraryState"] = indexModel;
+
+            //}
+            //if (Session["LibraryState"] != null)
+            //{
+            //    indexModel = (IndexModel)Session["LibraryState"];
+            //}
             return View(indexModel);
         }
-
-        public ActionResult DbInitializer()
-        {
-
-            return RedirectToAction("Index");
-        }
-
 
         [HttpPost]
         public ActionResult GetPublisherList(string id = "", string publisherName = "")
@@ -257,8 +349,8 @@ namespace LibraryProject.Controllers
         [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         public ActionResult EditBook(int id)
         {
-           IndexModel indexModel = (IndexModel)Session["LibraryState"];
-           Book book = (from t in indexModel.Books
+            IndexModel indexModel = (IndexModel)Session["LibraryState"];
+            Book book = (from t in indexModel.Books
                          where t.Id == id
                          select t).First();
             return View(book);
@@ -288,7 +380,7 @@ namespace LibraryProject.Controllers
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
             Book book = (from t in indexModel.Books
-                         where t.Id == id 
+                         where t.Id == id
                          select t).First();
 
             return PartialView(book);
