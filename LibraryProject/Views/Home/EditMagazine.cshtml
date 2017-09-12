@@ -31,6 +31,6 @@
             @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
         </div>
     </div>
-    <input type="submit" class="btn btn-sm btn-success" value="Save">
+    <input type="submit" formaction="/Home/EditMagazine/@Model.Id" class="btn btn-sm btn-success" value="Save">
     @Html.ActionLink("Back to list", "Index", "Home", new { }, new { @class = "btn btn-sm btn-success" })
 }

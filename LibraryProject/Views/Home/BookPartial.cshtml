@@ -10,8 +10,8 @@
             @using (Html.BeginForm())
             {
                 <input type="submit" formaction="/Home/GetAllPublisher/book" class="btn btn-sm btn-success" value="Get all publishers" />
-                    <input type="submit" formaction="/Home/GetPublisherList/book" class="btn btn-sm btn-success" value="Sort by publishers" />
-                    @Html.TextBox("publisherName", Session["PublisherName"], new { @class = "" })
+                <input type="submit" formaction="/Home/GetPublisherList/book" class="btn btn-sm btn-success" value="Sort by publishers" />
+                @Html.TextBox("publisherName", Session["PublisherName"], new { @class = "" })
             }
         </td>
     </tr>
