@@ -12,7 +12,7 @@
             {
                     <input type="submit" formaction="/Home/GetAllPublisher/magazine" class="btn btn-sm btn-success" value="Get all publishers" />
                     <input type="submit" formaction="/Home/GetPublisherList/magazine" class="btn btn-sm btn-success" value="Sort by publishers" />
-                    @Html.TextBox("publisherName", Session["PublisherName"], new { @class = "" })
+                    @Html.TextBox("publisherName", string.Empty, new { @class = "" })
                 }
             </td>
         </tr>
