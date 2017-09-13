@@ -232,6 +232,7 @@
     <Compile Include="Models\ApplicationRoleManager.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
     <Compile Include="Models\ApplicationUserManager.cs" />
+    <Compile Include="Models\BooksFilterModel.cs" />
     <Compile Include="Models\CreateRoleModel.cs" />
     <Compile Include="Models\IdentityExtensions.cs" />
     <Compile Include="Models\LoginModel.cs" />
@@ -275,6 +276,7 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Delete.cshtml" />
+    <Content Include="Views\Home\BooksFilterViewModel.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
