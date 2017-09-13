@@ -5,8 +5,8 @@
 }
 @ViewBag.Result
 
-@Html.Partial("BooksFilterViewModel", Model.BooksFilterModel@*Books*@)
+@Html.Partial("BookViewModel", Model.BooksFilterModel)
 
-@Html.Partial("MagazinePartial", Model.Magazines)
+@Html.Partial("MagazineViewModel", Model.MagazineFilterModel)
 
-@Html.Partial("NewspaperPartial", Model.Newspapers)
+@Html.Partial("NewspaperViewModel", Model.NewspaperFilterModel)

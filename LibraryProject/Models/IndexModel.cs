@@ -7,10 +7,11 @@ namespace LibraryProject.Models
 {
     public class IndexModel
     {
-       // public List<Book> Books { get; set; }
+        //public List<Book> Books { get; set; }
+        //public List<Magazine> Magazines { get; set; }
+        //public List<Newspaper> Newspapers { get; set; }
         public BooksFilterModel BooksFilterModel { get; set; }
-        public List<Magazine> Magazines { get; set; }
-        public List<Newspaper> Newspapers { get; set; }
-
+        public MagazineFilterModel MagazineFilterModel { get; set; }
+        public NewspaperFilterModel NewspaperFilterModel { get; set; }       
     }
 }

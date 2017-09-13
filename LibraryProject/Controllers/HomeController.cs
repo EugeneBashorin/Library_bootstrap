@@ -14,7 +14,6 @@ namespace LibraryProject.Controllers
     // [Authorize]
     public class HomeController : Controller
     {
-        bool flag = false;
         private string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
         [HttpGet]
@@ -41,13 +40,8 @@ namespace LibraryProject.Controllers
                 ViewBag.logoutLinkElement = ConfigurationData._ATTRIBUTES_STATE_OFF;
             }
 
-            //indexModel = InitializeDb();
-            
-              indexModel.BooksFilterModel = new BooksFilterModel()
-            {
-                BooksPublisher = new SelectList(new List<string>() { "All", "O.Reilly", "Syncfusion", "Williams", "Wrox", "ITVDN" })//,
-            };
-
+            indexModel.BooksFilterModel = new BooksFilterModel();
+            indexModel.BooksFilterModel.BooksPublisher = new SelectList(new List<string>() { "All", "O.Reilly", "Syncfusion", "Williams", "Wrox", "ITVDN" });
             indexModel.BooksFilterModel.Books = new List<Book>();
 
             if (!String.IsNullOrEmpty(bookPublisher) && !bookPublisher.Equals("All"))
@@ -62,7 +56,6 @@ namespace LibraryProject.Controllers
                     }
                     if (connection != null)
                     {
-                        Book book = new Book();
                         string bookSelectExpression = $"SELECT * FROM Books WHERE Publisher = '{bookPublisher}'";
                         SqlCommand command = new SqlCommand(bookSelectExpression, connection);
                         SqlDataReader reader = command.ExecuteReader();
@@ -81,10 +74,76 @@ namespace LibraryProject.Controllers
                 indexModel.BooksFilterModel.Books = GetAllBooks();
             }
 
-          
-            indexModel.Magazines = GetAllMagazines();
-            indexModel.Newspapers = GetAllNewspapers();
-            
+            //**********************************************************************Magazines*************************///////////////////////
+            indexModel.MagazineFilterModel = new MagazineFilterModel();
+            indexModel.MagazineFilterModel.MagazinesPublisher = new SelectList(new List<string>() {"All","Williams","Mag Group","Stanley & Co" });
+            indexModel.MagazineFilterModel.Magazines = new List<Magazine>();
+
+            if (!String.IsNullOrEmpty(magazinePublisher) && !magazinePublisher.Equals("All"))
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    if (connection == null)
+                    {
+                        return HttpNotFound();
+                    }
+                    if (connection != null)
+                    {
+                        string magazineSelectExpression = $"SELECT * FROM Magazines WHERE Publisher = '{magazinePublisher}'";
+                        SqlCommand command = new SqlCommand(magazineSelectExpression, connection);
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                indexModel.MagazineFilterModel.Magazines.Add(new Magazine { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1), Category = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4) });
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                indexModel.MagazineFilterModel.Magazines = GetAllMagazines();
+            }
+
+            //**********************************************************************Newspapers*************************
+
+            indexModel.NewspaperFilterModel = new NewspaperFilterModel();
+            indexModel.NewspaperFilterModel.NewspapersPublisher = new SelectList(new List<string>() { "All", "Red Octouber", "Ronald", "West-Cost", "Croxy" });
+            indexModel.NewspaperFilterModel.Newspapers = new List<Newspaper>();
+
+            if (!String.IsNullOrEmpty(newspaperPublisher) && !newspaperPublisher.Equals("All"))
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    if (connection == null)
+                    {
+                        return HttpNotFound();
+                    }
+                    if (connection != null)
+                    {
+                        string newspaperSelectExpression = $"SELECT * FROM Newspapers WHERE Publisher = '{newspaperPublisher}'";
+                        SqlCommand command = new SqlCommand(newspaperSelectExpression, connection);
+                        SqlDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                indexModel.NewspaperFilterModel.Newspapers.Add(new Newspaper { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1), Category = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4)});
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                indexModel.NewspaperFilterModel.Newspapers = GetAllNewspapers();
+            }
+
 
             return View(indexModel);
         }
@@ -104,7 +163,7 @@ namespace LibraryProject.Controllers
         //}
 
         //*************************************************
-        //List<Book> booksList;
+        List<Book> booksList;
         List<Magazine> magazinesList;
         List<Newspaper> newspapersList;
         //*************************************************
@@ -197,18 +256,18 @@ namespace LibraryProject.Controllers
 
 
             IndexModel indexModel = new IndexModel();
-            //if (booksList != null)
-            //    indexModel.BooksFilterModel.Books = booksList;
-            //else
-            //    indexModel.BooksFilterModel.Books = GetAllBooks();
+            if (booksList != null)
+                indexModel.BooksFilterModel.Books = booksList;
+            else
+                indexModel.BooksFilterModel.Books = GetAllBooks();
             if (magazinesList != null)
-                indexModel.Magazines = magazinesList;
+                indexModel.MagazineFilterModel.Magazines = magazinesList;
             else
-                indexModel.Magazines = GetAllMagazines(); ;
+                indexModel.MagazineFilterModel.Magazines = GetAllMagazines(); ;
             if (newspapersList != null)
-                indexModel.Newspapers = newspapersList;
+                indexModel.NewspaperFilterModel.Newspapers = newspapersList;
             else
-                indexModel.Newspapers = GetAllNewspapers();
+                indexModel.NewspaperFilterModel.Newspapers = GetAllNewspapers();
 
             return RedirectToAction("Index", indexModel);
 
@@ -525,7 +584,7 @@ namespace LibraryProject.Controllers
         public ActionResult GetDatabaseMagazineList()
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
-            List<Magazine> magazineList = indexModel.Magazines;
+            List<Magazine> magazineList = indexModel.MagazineFilterModel.Magazines;
             magazineList.SetMagazineListToDb(connectionString);
 
             return RedirectToAction("Index");
@@ -536,7 +595,7 @@ namespace LibraryProject.Controllers
         public ActionResult GetDatabaseNewspaperList()
         {
             IndexModel indexModel = (IndexModel)Session["LibraryState"];
-            List<Newspaper> newspaperList = indexModel.Newspapers;
+            List<Newspaper> newspaperList = indexModel.NewspaperFilterModel.Newspapers;
             newspaperList.SetNewspaperListToDb(connectionString);
 
             return RedirectToAction("Index");

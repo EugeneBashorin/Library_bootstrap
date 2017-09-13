@@ -3,15 +3,8 @@
 @{
     ViewBag.Title = "BooksFilterViewModel";
 }
-
 <h2>BooksFilterViewModel</h2>
 
-@*<p>
-        @Html.ActionLink("Добавить игрока", "Create")
-    </p>*@
-
-
-<table></table>
 <h4>Books</h4>
 <table class="table table-striped table-condensed table-bordered col-md-11 col-md-pull-1">
     <tr>
@@ -22,9 +15,8 @@
             @using (Html.BeginForm("Index", "Home", FormMethod.Get))
             {
                 <div class="form-inline">
-                    <label class="control-label">Publisher </label>
                     @Html.DropDownList("bookPublisher", Model.BooksPublisher as SelectList, htmlAttributes: new { @class = "form-control" })
-                    <input type="submit" value="Publisher filtr" class="btn btn-sm btn-info" />
+                    <input type="submit" value="Filtr publisher" class="btn btn-sm btn-primary" />
                 </div>
             }
         </td>
