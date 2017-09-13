@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 using System.Web.Mvc;
 
 namespace LibraryProject.Controllers
@@ -19,7 +17,16 @@ namespace LibraryProject.Controllers
         [HttpGet]
         public ActionResult Index(string bookPublisher = "All", string magazinePublisher = "All", string newspaperPublisher = "All")
         {
+            CheckRole();
             IndexModel indexModel = new IndexModel();
+            Initialize(indexModel);
+            indexModel = CheckPublisher(indexModel, bookPublisher, magazinePublisher, newspaperPublisher);
+
+            return View(indexModel);
+        }
+
+        private void CheckRole()
+        {
             if (User.IsInRole(ConfigurationData._USER_ROLE))
             {
                 ViewBag.hideElement = ConfigurationData._ATTRIBUTES_STATE_OFF;
@@ -39,21 +46,33 @@ namespace LibraryProject.Controllers
                 ViewBag.accountElementState = ConfigurationData._ATTRIBUTES_STATE_ON;
                 ViewBag.logoutLinkElement = ConfigurationData._ATTRIBUTES_STATE_OFF;
             }
+        }
 
-            indexModel.BooksFilterModel = new BooksFilterModel();
-            indexModel.BooksFilterModel.BooksPublisher = new SelectList(new List<string>() { "All", "O.Reilly", "Syncfusion", "Williams", "Wrox", "ITVDN" });
-            indexModel.BooksFilterModel.Books = new List<Book>();
+        private IndexModel Initialize(IndexModel model)
+        {
+            model.BooksFilterModel = new BooksFilterModel();
+            model.BooksFilterModel.BooksPublisher = new SelectList(new List<string>() { "All", "O.Reilly", "Syncfusion", "Williams", "Wrox", "ITVDN" });
+            model.BooksFilterModel.Books = new List<Book>();
 
+            model.MagazineFilterModel = new MagazineFilterModel();
+            model.MagazineFilterModel.MagazinesPublisher = new SelectList(new List<string>() { "All", "Williams", "Mag Group", "Stanley & Co" });
+            model.MagazineFilterModel.Magazines = new List<Magazine>();
+
+            model.NewspaperFilterModel = new NewspaperFilterModel();
+            model.NewspaperFilterModel.NewspapersPublisher = new SelectList(new List<string>() { "All", "Red Octouber", "Ronald", "West-Cost", "Croxy" });
+            model.NewspaperFilterModel.Newspapers = new List<Newspaper>();
+
+            return model;
+        }
+
+        public IndexModel CheckPublisher( IndexModel model, string bookPublisher = "All", string magazinePublisher = "All", string newspaperPublisher = "All")
+        {
+            
             if (!String.IsNullOrEmpty(bookPublisher) && !bookPublisher.Equals("All"))
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
-
-                    if (connection == null)
-                    {
-                        return HttpNotFound();
-                    }
                     if (connection != null)
                     {
                         string bookSelectExpression = $"SELECT * FROM Books WHERE Publisher = '{bookPublisher}'";
@@ -63,7 +82,7 @@ namespace LibraryProject.Controllers
                         {
                             while (reader.Read())
                             {
-                                indexModel.BooksFilterModel.Books.Add(new Book { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1), Author = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4) });
+                                model.BooksFilterModel.Books.Add(new Book { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1), Author = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4) });
                             }
                         }
                     }
@@ -71,24 +90,14 @@ namespace LibraryProject.Controllers
             }
             else
             {
-                indexModel.BooksFilterModel.Books = GetAllBooks();
+                model.BooksFilterModel.Books = GetAllBooks();
             }
-
-            //**********************************************************************Magazines*************************///////////////////////
-            indexModel.MagazineFilterModel = new MagazineFilterModel();
-            indexModel.MagazineFilterModel.MagazinesPublisher = new SelectList(new List<string>() {"All","Williams","Mag Group","Stanley & Co" });
-            indexModel.MagazineFilterModel.Magazines = new List<Magazine>();
 
             if (!String.IsNullOrEmpty(magazinePublisher) && !magazinePublisher.Equals("All"))
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    connection.Open();
-
-                    if (connection == null)
-                    {
-                        return HttpNotFound();
-                    }
+                    connection.Open();                 
                     if (connection != null)
                     {
                         string magazineSelectExpression = $"SELECT * FROM Magazines WHERE Publisher = '{magazinePublisher}'";
@@ -98,7 +107,7 @@ namespace LibraryProject.Controllers
                         {
                             while (reader.Read())
                             {
-                                indexModel.MagazineFilterModel.Magazines.Add(new Magazine { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1), Category = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4) });
+                                model.MagazineFilterModel.Magazines.Add(new Magazine { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1), Category = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4) });
                             }
                         }
                     }
@@ -106,24 +115,13 @@ namespace LibraryProject.Controllers
             }
             else
             {
-                indexModel.MagazineFilterModel.Magazines = GetAllMagazines();
+                model.MagazineFilterModel.Magazines = GetAllMagazines();
             }
-
-            //**********************************************************************Newspapers*************************
-
-            indexModel.NewspaperFilterModel = new NewspaperFilterModel();
-            indexModel.NewspaperFilterModel.NewspapersPublisher = new SelectList(new List<string>() { "All", "Red Octouber", "Ronald", "West-Cost", "Croxy" });
-            indexModel.NewspaperFilterModel.Newspapers = new List<Newspaper>();
-
             if (!String.IsNullOrEmpty(newspaperPublisher) && !newspaperPublisher.Equals("All"))
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    connection.Open();
-                    if (connection == null)
-                    {
-                        return HttpNotFound();
-                    }
+                    connection.Open();                 
                     if (connection != null)
                     {
                         string newspaperSelectExpression = $"SELECT * FROM Newspapers WHERE Publisher = '{newspaperPublisher}'";
@@ -133,7 +131,7 @@ namespace LibraryProject.Controllers
                         {
                             while (reader.Read())
                             {
-                                indexModel.NewspaperFilterModel.Newspapers.Add(new Newspaper { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1), Category = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4)});
+                                model.NewspaperFilterModel.Newspapers.Add(new Newspaper { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1), Category = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4) });
                             }
                         }
                     }
@@ -141,136 +139,9 @@ namespace LibraryProject.Controllers
             }
             else
             {
-                indexModel.NewspaperFilterModel.Newspapers = GetAllNewspapers();
+                model.NewspaperFilterModel.Newspapers = GetAllNewspapers();
             }
-
-
-            return View(indexModel);
-        }
-
-        //public IndexModel InitializeDb()
-        //{
-        //    //IndexModel indexModel = new IndexModel();
-        //    //indexModel.BooksFilterModel = new BooksFilterModel(){
-        //    //    BooksPublisher = new SelectList(new List<string>() { "All", "O.Reilly", "Syncfusion", "Williams", "Wrox", "ITVDN" }),
-        //    //    Books = GetAllBooks()
-        //    //};
-        //    //indexModel.BooksFilterModel.Books = GetAllBooks();
-        //    //indexModel.Magazines = GetAllMagazines();
-        //    //indexModel.Newspapers = GetAllNewspapers();
-
-        //    return indexModel;
-        //}
-
-        //*************************************************
-        List<Book> booksList;
-        List<Magazine> magazinesList;
-        List<Newspaper> newspapersList;
-        //*************************************************
-        [HttpPost]
-        public ActionResult GetPublisherList(string id = "", string publisherName = "")
-        {
-            if (id == ConfigurationData._BOOK_KEY)
-            {
-                //using (SqlConnection connection = new SqlConnection(connectionString))
-                //{
-                //    connection.Open();
-
-                //    if (connection == null)
-                //    {
-                //        return HttpNotFound();
-                //    }
-                //    if (connection != null)
-                //    {
-                //        booksList = new List<Book>();
-                //        Book book = new Book();
-                //        string bookSelectExpression = $"SELECT * FROM Books WHERE Publisher = '{publisherName}'";
-                //        SqlCommand command = new SqlCommand(bookSelectExpression, connection);
-                //        SqlDataReader reader = command.ExecuteReader();
-                //        if (reader.HasRows)
-                //        {
-                //            while (reader.Read())
-                //            {
-                //                booksList.Add(new Book { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1), Author = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4) });
-                //            }
-                //        }
-                //    }
-                //}
-            }
-
-            if (id == ConfigurationData._MAGAZINE_KEY)
-            {
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                {
-                    connection.Open();
-
-                    if (connection == null)
-                    {
-                        return HttpNotFound();
-                    }
-                    if (connection != null)
-                    {
-                        magazinesList = new List<Magazine>();
-                        Magazine magazine = new Magazine();
-                        string magazinesSelectExpression = $"SELECT * FROM Magazines WHERE Publisher == {publisherName}";
-                        SqlCommand command = new SqlCommand(magazinesSelectExpression, connection);
-                        SqlDataReader reader = command.ExecuteReader();
-                        if (reader.HasRows)
-                        {
-                            while (reader.Read())
-                            {
-                                magazinesList.Add(new Magazine { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1), Category = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4) });
-                            }
-                        }
-                    }
-                }
-            }
-            if (id == ConfigurationData._NEWSPAPER_KEY)
-            {
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                {
-                    connection.Open();
-
-                    if (connection == null)
-                    {
-                        return HttpNotFound();
-                    }
-                    if (connection != null)
-                    {
-                        newspapersList = new List<Newspaper>();
-                        Newspaper newspaper = new Newspaper();
-                        string newspaperSelectExpression = $"SELECT * FROM Newspapers WHERE Publisher == {publisherName}";
-                        SqlCommand command = new SqlCommand(newspaperSelectExpression, connection);
-                        SqlDataReader reader = command.ExecuteReader();
-                        if (reader.HasRows)
-                        {
-                            while (reader.Read())
-                            {
-                                newspapersList.Add(new Newspaper { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1), Category = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4) });
-                            }
-                        }
-
-                    }
-                }
-            }
-
-
-            IndexModel indexModel = new IndexModel();
-            if (booksList != null)
-                indexModel.BooksFilterModel.Books = booksList;
-            else
-                indexModel.BooksFilterModel.Books = GetAllBooks();
-            if (magazinesList != null)
-                indexModel.MagazineFilterModel.Magazines = magazinesList;
-            else
-                indexModel.MagazineFilterModel.Magazines = GetAllMagazines(); ;
-            if (newspapersList != null)
-                indexModel.NewspaperFilterModel.Newspapers = newspapersList;
-            else
-                indexModel.NewspaperFilterModel.Newspapers = GetAllNewspapers();
-
-            return RedirectToAction("Index", indexModel);
-
+            return model;
         }
 
         private List<Book> GetAllBooks()
@@ -349,26 +220,6 @@ namespace LibraryProject.Controllers
             return newspapersList;
         }
 
-        [HttpPost]
-        public ActionResult GetAllPublisher(string id = "")
-        {
-           // IndexModel indexModel = (IndexModel)Session["LibraryState"];//*********************************************
-
-            //if (id == ConfigurationData._BOOK_KEY)
-            //{
-            //    indexModel.Books = GetAllBooks();
-            //}
-            //if (id == ConfigurationData._MAGAZINE_KEY)
-            //{
-            //    indexModel.Magazines = GetAllMagazines();
-            //}
-            //if (id == ConfigurationData._NEWSPAPER_KEY)
-            //{
-            //    indexModel.Newspapers = GetAllNewspapers();
-            //}
-            return RedirectToAction("Index");
-        }
-
         public ActionResult GetBooksList()
         {
             List<Book> bookList = GetAllBooks();
@@ -410,9 +261,42 @@ namespace LibraryProject.Controllers
             magazineList.GetXmlList();
             return RedirectToAction("Index");
         }
-        
-        //[HttpGet]
-        //[Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
+
+        [HttpGet]/*****************************************?????How can save Db To exist Db?????**************************************************/
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
+        public ActionResult GetDatabaseBookList()
+        {
+            IndexModel indexModel = (IndexModel)Session["LibraryState"];
+            List<Book> bookList = indexModel.BooksFilterModel.Books;
+            bookList.SetBookListToDb(connectionString);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]/*****************************************?????How can save Db To exist Db?????**************************************************/
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
+        public ActionResult GetDatabaseMagazineList()
+        {
+            IndexModel indexModel = (IndexModel)Session["LibraryState"];
+            List<Magazine> magazineList = indexModel.MagazineFilterModel.Magazines;
+            magazineList.SetMagazineListToDb(connectionString);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]/*****************************************?????How can save Db To exist Db?????**************************************************/
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
+        public ActionResult GetDatabaseNewspaperList()
+        {
+            IndexModel indexModel = (IndexModel)Session["LibraryState"];
+            List<Newspaper> newspaperList = indexModel.NewspaperFilterModel.Newspapers;
+            newspaperList.SetNewspaperListToDb(connectionString);
+
+            return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
+        [HttpGet]
         public ActionResult CreateBook()
         {
             return View();
@@ -465,6 +349,7 @@ namespace LibraryProject.Controllers
             }
             return View(book);
         }
+
         //[Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
         [HttpGet]
         public ActionResult EditBook(int id)
@@ -516,8 +401,9 @@ namespace LibraryProject.Controllers
             return RedirectToAction("Index");
         }
 
-        //[HttpGet]
+
         //[Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
+        [HttpGet]
         public ActionResult DeleteBook(int? id)
         {
             Book book = new Book();
@@ -565,39 +451,6 @@ namespace LibraryProject.Controllers
                     }
                 }
             }
-            return RedirectToAction("Index");
-        }
-
-        [HttpGet]/*****************************************?????How can save Db To exist Db?????**************************************************/
-        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
-        public ActionResult GetDatabaseBookList()
-        {
-            IndexModel indexModel = (IndexModel)Session["LibraryState"];
-            List<Book> bookList = indexModel.BooksFilterModel.Books;
-            bookList.SetBookListToDb(connectionString);
-
-            return RedirectToAction("Index");
-        }
-
-        [HttpGet]/*****************************************?????How can save Db To exist Db?????**************************************************/
-        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
-        public ActionResult GetDatabaseMagazineList()
-        {
-            IndexModel indexModel = (IndexModel)Session["LibraryState"];
-            List<Magazine> magazineList = indexModel.MagazineFilterModel.Magazines;
-            magazineList.SetMagazineListToDb(connectionString);
-
-            return RedirectToAction("Index");
-        }
-
-        [HttpGet]/*****************************************?????How can save Db To exist Db?????**************************************************/
-        [Authorize(Roles = ConfigurationData._ADMIN_ROLE)]
-        public ActionResult GetDatabaseNewspaperList()
-        {
-            IndexModel indexModel = (IndexModel)Session["LibraryState"];
-            List<Newspaper> newspaperList = indexModel.NewspaperFilterModel.Newspapers;
-            newspaperList.SetNewspaperListToDb(connectionString);
-
             return RedirectToAction("Index");
         }
 
