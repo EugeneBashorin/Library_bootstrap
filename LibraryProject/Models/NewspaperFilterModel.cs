@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Entityes.Entities;
+using System.Collections.Generic;
 using System.Web.Mvc;
 
 namespace LibraryProject.Models

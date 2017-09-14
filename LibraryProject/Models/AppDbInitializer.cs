@@ -7,9 +7,6 @@ namespace LibraryProject.Models
 {
     public class AppDbInitializer : DropCreateDatabaseAlways<ApplicationContext>
     {
-       
-
-
         protected override void Seed(ApplicationContext context)
         {
             var userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(context));

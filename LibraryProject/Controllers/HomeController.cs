@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Web.Mvc;
+using Entityes.Entities;
+using BusinessLogicLayer;
 
 namespace LibraryProject.Controllers
 {
@@ -90,7 +92,7 @@ namespace LibraryProject.Controllers
             }
             else
             {
-                model.BooksFilterModel.Books = GetAllBooks();
+                model.BooksFilterModel.Books = BLL.GetAllBooks();//GetAllBooks();
             }
 
             if (!String.IsNullOrEmpty(magazinePublisher) && !magazinePublisher.Equals("All"))
@@ -144,33 +146,7 @@ namespace LibraryProject.Controllers
             return model;
         }
 
-        private List<Book> GetAllBooks()
-        {
-            List<Book> booksList;
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                booksList = new List<Book>();
-                if (connection != null)
-                {
-
-                    Book book = new Book();
-                    string newspaperSelectExpression = "SELECT * FROM Books";
-                    SqlCommand command = new SqlCommand(newspaperSelectExpression, connection);
-                    SqlDataReader reader = command.ExecuteReader();
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            booksList.Add(new Book { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1), Author = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4) });
-                        }
-                    }
-                }
-            }
-            return booksList;
-        }
-
-        private List<Magazine> GetAllMagazines()
+        private List<Entityes.Entities.Magazine> GetAllMagazines()
         {
             List<Magazine> magazinesList;
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -222,7 +198,7 @@ namespace LibraryProject.Controllers
 
         public ActionResult GetBooksList()
         {
-            List<Book> bookList = GetAllBooks();
+            List<Book> bookList = BLL.GetAllBooks();
             bookList.GetTxtList();
             return RedirectToAction("Index");
         }
@@ -243,7 +219,7 @@ namespace LibraryProject.Controllers
 
         public ActionResult GetBooksXmlList()
         {
-            List<Book> bookList = GetAllBooks();
+            List<Book> bookList = BLL.GetAllBooks();
             bookList.GetXmlList();
             return RedirectToAction("Index");
         }
@@ -354,28 +330,28 @@ namespace LibraryProject.Controllers
         [HttpGet]
         public ActionResult EditBook(int id)
         {
-            Book book = new Book();
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                if (connection != null)
-                {
-                    string searchBookExpression = $"SELECT * FROM Books WHERE Id = '{id}'";
-                    SqlCommand command = new SqlCommand(searchBookExpression, connection);
-                    SqlDataReader reader = command.ExecuteReader();
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            book.Id = (int)reader.GetValue(0);
-                            book.Name = (string)reader.GetValue(1);
-                            book.Author = (string)reader.GetValue(2);
-                            book.Publisher = (string)reader.GetValue(3);
-                            book.Price = (int)reader.GetValue(4);
-                        }
-                    }
-                }
-            }
+            Book book = BLL.GetItemById(id);//new Book();
+            //using (SqlConnection connection = new SqlConnection(connectionString))
+            //{
+            //    connection.Open();
+            //    if (connection != null)
+            //    {
+            //        string searchBookExpression = $"SELECT * FROM Books WHERE Id = '{id}'";
+            //        SqlCommand command = new SqlCommand(searchBookExpression, connection);
+            //        SqlDataReader reader = command.ExecuteReader();
+            //        if (reader.HasRows)
+            //        {
+            //            while (reader.Read())
+            //            {
+            //                book.Id = (int)reader.GetValue(0);
+            //                book.Name = (string)reader.GetValue(1);
+            //                book.Author = (string)reader.GetValue(2);
+            //                book.Publisher = (string)reader.GetValue(3);
+            //                book.Price = (int)reader.GetValue(4);
+            //            }
+            //        }
+            //    }
+            //}
             return View(book);
         }
 
@@ -770,3 +746,29 @@ namespace LibraryProject.Controllers
         }
     }
 }
+
+// private List<Book> GetAllBooks()
+//{
+//    List<Book> booksList;
+//    using (SqlConnection connection = new SqlConnection(connectionString))
+//    {
+//        connection.Open();
+//        booksList = new List<Book>();
+//        if (connection != null)
+//        {
+
+//            Book book = new Book();
+//            string newspaperSelectExpression = "SELECT * FROM Books";
+//            SqlCommand command = new SqlCommand(newspaperSelectExpression, connection);
+//            SqlDataReader reader = command.ExecuteReader();
+//            if (reader.HasRows)
+//            {
+//                while (reader.Read())
+//                {
+//                    booksList.Add(new Book { Id = (int)reader.GetValue(0), Name = (string)reader.GetValue(1), Author = (string)reader.GetValue(2), Publisher = (string)reader.GetValue(3), Price = (int)reader.GetValue(4) });
+//                }
+//            }
+//        }
+//    }
+//    return booksList;
+//}

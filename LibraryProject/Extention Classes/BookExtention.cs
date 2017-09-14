@@ -1,4 +1,5 @@
-﻿using LibraryProject.Configurations;
+﻿using Entityes.Entities;
+using LibraryProject.Configurations;
 using LibraryProject.Models;
 using System;
 using System.Collections.Generic;
